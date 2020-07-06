@@ -28,6 +28,8 @@ $.prototype.animateOverTime = function(dur, cb, fin) {
 $.prototype.fadeIn = function(dur, display, fin) {
 	for (let i = 0; i < this.length; i++) {
 		this[i].style.display = display || 'block';
+		this[i].style.height = this[i].scrollHeight + 'px';
+		this[i].style.height = this[i].scrollwidth + 'px';
 
 		const _fadeIn = (complection) => {
 			this[i].style.opacity = complection;
@@ -59,29 +61,64 @@ $.prototype.fadeOut = function(dur, fin) {
 
 $.prototype.fadeToggle = function(dur, display, fin) {
 	for (let i = 0; i < this.length; i++) {
-		let anim;
-
 		if (window.getComputedStyle(this[i]).display === 'none') {
-			const _fadeIn = (complection) => {
-				this[i].style.opacity = complection;
-			};
-
-			this[i].style.display = display || 'block';
-
-			anim = this.animateOverTime(dur, _fadeIn, fin);
+			$(this[i]).fadeIn(dur, display, fin);
 		} else {
-			const _fadeOut = (complection) => {
-				this[i].style.opacity = 1 - complection;
-
-				if (complection === 1) {
-					this[i].style.display = 'none';
-				}
-			};
-	
-			anim = this.animateOverTime(dur, _fadeOut, fin);
+			$(this[i]).fadeOut(dur, fin);
 		}
+	}
 
+	return this;
+};
+
+$.prototype.slideIn = function(dur, display, fin) {
+	for (let i = 0; i < this.length; i++) {
+		this[i].style.display = display || 'block';
+
+		const _slideIn = (complection) => {
+			let height = complection * this[i].scrollHeight;
+			this[i].style.height = height + 'px';
+			this[i].style.overflow = '';
+		};
+
+
+		const anim = this.animateOverTime(dur, _slideIn, fin);
 		requestAnimationFrame(anim);
+	}
+
+	return this;
+};
+
+$.prototype.slideOut = function(dur, fin) {
+	for (let i = 0; i < this.length; i++) {
+
+		const _slideOut = (complection) => {
+			this[i].style.overflow = 'hidden';
+			
+			let height = (1 - complection) * this[i].scrollHeight;
+			
+			this[i].style.height = height + 'px';
+
+			if (complection === 1) {
+				this[i].style.display = 'none';
+			}
+		};
+
+		const anim = this.animateOverTime(dur, _slideOut, fin);
+		requestAnimationFrame(anim);
+	}
+
+	return this;
+};
+
+$.prototype.slideToggle = function(dur, display, fin) {
+	for (let i = 0; i < this.length; i++) {
+		if (window.getComputedStyle(this[i]).display === 'none' || 
+			window.getComputedStyle(this[i]).height === '0px') {
+			$(this[i]).slideIn(dur, display, fin);
+		} else {
+			$(this[i]).slideOut(dur, fin);
+		}
 	}
 
 	return this;

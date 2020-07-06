@@ -12,18 +12,18 @@ $.prototype.html = function(content) {
 	return this;
 };
 
-$.prototype.eq = function(i) {
+$.prototype.eq = function (i) {
 	if (i > this.length) {
 		i = this.length;
 	}
 
-	const swap = this[i - 1];
+	const swap = this[i];
 	const objLength = Object.keys(this).length;
 
-	for (let j = 0; j < objLength; j++) {
-		delete this[j];
+	for (let i = 0; i < objLength; i++) {
+		delete this[i];
 	}
-	
+
 	this[0] = swap;
 	this.length = 1;
 
@@ -34,16 +34,13 @@ $.prototype.index = function() {
 	const parent = this[0].parentNode;
 	const childs = [...parent.children];
 
-	const findMyIndex = (item) => {
+	return childs.findIndex((item, i) => {
 		return item == this[0];
-	};
-
-	return childs.findIndex(findMyIndex);
+	});
 };
 
 $.prototype.find = function(selector) {
-	let numberOfItems = 0,
-		 counter = 0;
+	let counter = 0;
 
 	const copyObj = Object.assign({}, this);
 
@@ -57,18 +54,29 @@ $.prototype.find = function(selector) {
 			this[counter] = arr[j];
 			counter++;
 		}
-
-		numberOfItems += arr.length;
 	}
 
-	this.length = numberOfItems;
+	this.length = counter;
 
 	const objLength = Object.keys(this).length;
-	for (; numberOfItems < objLength; numberOfItems++) {
-		delete this[numberOfItems];
+
+	for (; counter < objLength; counter++) {
+		delete this[counter];
 	}
 
 	return this;
+};
+
+$.prototype.append = function(...elems) {
+	for (let i = 0; i < this.length; i++) {
+		this[i].append(...elems);
+	}
+};
+
+$.prototype.remove = function() {
+	for (let i = 0; i < this.length; i++) {
+		this[i].remove();
+	}
 };
 
 $.prototype.closest = function(selector) {
@@ -76,7 +84,7 @@ $.prototype.closest = function(selector) {
 
 	for (let i = 0; i < this.length; i++) {
 		if (!this[i].closest(selector)) {
-			counter++;
+			continue;
 		} else {
 			this[i] = this[i].closest(selector);
 			counter++;
@@ -91,9 +99,14 @@ $.prototype.closest = function(selector) {
 	return this;
 };
 
+$.prototype.containsClass = function(selector) {
+	for (let i = 0; i < this.length; i++) {
+		return this[i].classList.contains(selector);
+	}
+};
+
 $.prototype.siblings = function() {
-	let numberOfItems = 0,
-		 counter = 0;
+	let counter = 0;
 
 	const copyObj = Object.assign({}, this);
 
@@ -108,15 +121,14 @@ $.prototype.siblings = function() {
 			this[counter] = arr[j];
 			counter++;
 		}
-
-		numberOfItems += arr.length - 1;
 	}
 
-	this.length = numberOfItems;
+	this.length = counter;
 
 	const objLength = Object.keys(this).length;
-	for (; numberOfItems < objLength; numberOfItems++) {
-		delete this[numberOfItems];
+
+	for (; counter < objLength; counter++) {
+		delete this[counter];
 	}
 
 	return this;
